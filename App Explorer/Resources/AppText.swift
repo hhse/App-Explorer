@@ -38,6 +38,10 @@ enum LocalizedTextKey {
     case originalSize
     case exportIconSize
     case version
+    case buildNumber
+    case displayName
+    case bundleName
+    case executable
     case minimumIOS
     case systemBadge
     case userApp
@@ -51,8 +55,11 @@ enum LocalizedTextKey {
     case copyBundlePath
     case copyDataPath
     case exportAppIcon
+    case exportInfoPlist
     case iconReady
+    case infoPlistReady
     case noIconAvailable
+    case unavailable
     case backToApps
     case copied
     case scanFailed
@@ -100,6 +107,10 @@ enum AppText {
         case .originalSize: return "原始尺寸"
         case .exportIconSize: return "导出 %@"
         case .version: return "版本"
+        case .buildNumber: return "Build"
+        case .displayName: return "显示名称"
+        case .bundleName: return "Bundle 名称"
+        case .executable: return "可执行文件"
         case .minimumIOS: return "最低 iOS"
         case .systemBadge: return "系统"
         case .userApp: return "用户应用"
@@ -113,8 +124,11 @@ enum AppText {
         case .copyBundlePath: return "复制 Bundle 路径"
         case .copyDataPath: return "复制数据路径"
         case .exportAppIcon: return "导出应用图标"
+        case .exportInfoPlist: return "导出 Info.plist"
         case .iconReady: return "图标已就绪"
+        case .infoPlistReady: return "Info.plist 已就绪"
         case .noIconAvailable: return "当前应用没有可用图标。"
+        case .unavailable: return "不可用"
         case .backToApps: return "应用"
         case .copied: return "已复制"
         case .scanFailed: return "扫描失败"
@@ -153,6 +167,10 @@ enum AppText {
         case .originalSize: return "Original"
         case .exportIconSize: return "Export %@"
         case .version: return "Version"
+        case .buildNumber: return "Build"
+        case .displayName: return "Display Name"
+        case .bundleName: return "Bundle Name"
+        case .executable: return "Executable"
         case .minimumIOS: return "Min iOS"
         case .systemBadge: return "System"
         case .userApp: return "User App"
@@ -166,8 +184,11 @@ enum AppText {
         case .copyBundlePath: return "Copy Bundle Path"
         case .copyDataPath: return "Copy Data Path"
         case .exportAppIcon: return "Export App Icon"
+        case .exportInfoPlist: return "Export Info.plist"
         case .iconReady: return "Icon Ready"
+        case .infoPlistReady: return "Info.plist Ready"
         case .noIconAvailable: return "No icon is available for this app."
+        case .unavailable: return "Unavailable"
         case .backToApps: return "Apps"
         case .copied: return "Copied"
         case .scanFailed: return "Scan Failed"

@@ -8,10 +8,11 @@ App Explorer 是一个面向 TrollStore 环境的极简应用浏览工具。
 
 - 浏览已安装应用
 - 搜索应用名称和 Bundle ID
-- 查看应用详情
+- 查看应用详情：Bundle ID、Version、Build、Minimum iOS、Executable、Bundle Path、Data Path
 - 复制 Bundle ID、Bundle Path、Data Path
 - 导出应用图标为 PNG
 - 支持原始尺寸、1024、180、120 图标规格导出
+- 导出应用 Info.plist
 - 默认中文界面
 - 支持中文 / English 切换
 - 关于页内提供 Telegram、GitHub、公众号入口
@@ -44,8 +45,8 @@ App Explorer 是一个面向 TrollStore 环境的极简应用浏览工具。
 
 ### 第一阶段：完整的应用资源导出工具
 
-- 补充更多应用信息：Build、Team ID、Minimum iOS、Executable、Bundle Path、Data Path
-- 增加资源导出：Info.plist、App Icon、LaunchImage、Assets、Entitlements
+- 补充更多应用信息：Team ID、URL Scheme、CFBundleURLTypes、LSApplicationQueriesSchemes
+- 增加资源导出：LaunchImage、Assets、Entitlements
 - 完善详情页高频复制：Bundle ID、Version、Bundle Path、Data Path
 - 建立统一的导出中心
 

@@ -23,6 +23,20 @@ struct AppDetailView: View {
                 VStack(spacing: 14) {
                     DetailInfoCard(title: text(.bundleID), value: app.bundleID)
                     DetailInfoCard(title: text(.version), value: app.displayVersion)
+                    DetailInfoCard(title: text(.buildNumber), value: app.build.isEmpty ? text(.unavailable) : app.build)
+
+                    if let displayName = app.displayName, !displayName.isEmpty {
+                        DetailInfoCard(title: text(.displayName), value: displayName)
+                    }
+
+                    if let bundleName = app.bundleName, !bundleName.isEmpty {
+                        DetailInfoCard(title: text(.bundleName), value: bundleName)
+                    }
+
+                    if let executable = app.executable, !executable.isEmpty {
+                        DetailInfoCard(title: text(.executable), value: executable)
+                    }
+
                     DetailInfoCard(title: text(.bundlePath), value: app.bundlePath)
 
                     if let dataURL = app.dataURL {
@@ -53,6 +67,8 @@ struct AppDetailView: View {
                         bundleID: app.bundleID,
                         language: settings.language
                     )
+
+                    ExportInfoPlistButton(app: app, language: settings.language)
                 }
             }
             .padding(.horizontal, 20)
@@ -123,7 +139,7 @@ private struct ExportIconButton: View {
 
     @State private var exported = false
     @State private var exportSize: IconExportSize = .size1024
-    @State private var shareItem: IconShareItem?
+    @State private var shareItem: FileShareItem?
     @State private var errorMessage: String?
     @State private var showShareSheet = false
 
@@ -204,10 +220,11 @@ private struct ExportIconButton: View {
                 bundleID: bundleID,
                 size: exportSize
             )
-            shareItem = IconShareItem(
+            shareItem = FileShareItem(
                 data: result.data,
                 fileName: result.fileName,
-                title: appName
+                title: appName,
+                typeIdentifier: "public.png"
             )
             errorMessage = nil
 
@@ -228,15 +245,97 @@ private struct ExportIconButton: View {
     }
 }
 
-private final class IconShareItem: NSObject, UIActivityItemSource {
+private struct ExportInfoPlistButton: View {
+    let app: InstalledApp
+    let language: AppLanguage
+
+    @State private var exported = false
+    @State private var shareItem: FileShareItem?
+    @State private var errorMessage: String?
+    @State private var showShareSheet = false
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Button {
+                exportInfoPlist()
+            } label: {
+                HStack {
+                    Text(exported ? text(.infoPlistReady) : text(.exportInfoPlist))
+                        .font(.system(size: 15, weight: .semibold, design: .rounded))
+
+                    Spacer()
+
+                    Image(systemName: exported ? "checkmark" : "doc.badge.gearshape")
+                        .font(.system(size: 15, weight: .bold))
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 16)
+                .background(
+                    exported ? Color(red: 0.18, green: 0.43, blue: 0.63) : Color.white.opacity(0.08),
+                    in: RoundedRectangle(cornerRadius: 20, style: .continuous)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .strokeBorder(.white.opacity(exported ? 0.04 : 0.10), lineWidth: 1)
+                )
+            }
+            .buttonStyle(ScaleButtonStyle())
+            .sheet(isPresented: $showShareSheet) {
+                if let shareItem {
+                    ShareSheet(activityItems: [shareItem])
+                }
+            }
+
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(Color.red.opacity(0.86))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: exported)
+    }
+
+    private func exportInfoPlist() {
+        do {
+            let result = try InfoPlistExportService.export(app: app)
+            shareItem = FileShareItem(
+                data: result.data,
+                fileName: result.fileName,
+                title: app.name,
+                typeIdentifier: "com.apple.property-list"
+            )
+            errorMessage = nil
+
+            withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
+                exported = true
+            }
+
+            showShareSheet = true
+        } catch {
+            exported = false
+            shareItem = nil
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func text(_ key: LocalizedTextKey) -> String {
+        AppText.text(key, language: language)
+    }
+}
+
+private final class FileShareItem: NSObject, UIActivityItemSource {
     let data: Data
     let fileName: String
     let title: String
+    let typeIdentifier: String
 
-    init(data: Data, fileName: String, title: String) {
+    init(data: Data, fileName: String, title: String, typeIdentifier: String) {
         self.data = data
         self.fileName = fileName
         self.title = title
+        self.typeIdentifier = typeIdentifier
     }
 
     func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
@@ -252,7 +351,7 @@ private final class IconShareItem: NSObject, UIActivityItemSource {
     }
 
     func activityViewController(_ activityViewController: UIActivityViewController, dataTypeIdentifierForActivityType activityType: UIActivity.ActivityType?) -> String {
-        "public.png"
+        typeIdentifier
     }
 }
 

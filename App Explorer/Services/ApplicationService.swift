@@ -51,6 +51,10 @@ struct ApplicationService: Sendable {
                     name: snapshot.localizedName,
                     version: snapshot.bundleVersion,
                     shortVersion: snapshot.shortVersionString,
+                    build: infoValue("CFBundleVersion", bundleURL: snapshot.bundleURL) ?? snapshot.bundleVersion,
+                    executable: infoValue("CFBundleExecutable", bundleURL: snapshot.bundleURL),
+                    displayName: infoValue("CFBundleDisplayName", bundleURL: snapshot.bundleURL),
+                    bundleName: infoValue("CFBundleName", bundleURL: snapshot.bundleURL),
                     bundleURL: snapshot.bundleURL,
                     dataURL: snapshot.dataContainerURL,
                     minimumOSVersion: snapshot.minimumSystemVersion,
@@ -80,6 +84,21 @@ struct ApplicationService: Sendable {
         )
 
         return AppScanResult(apps: apps, icons: iconMap, summary: summary)
+    }
+
+    nonisolated private func infoValue(_ key: String, bundleURL: URL?) -> String? {
+        guard let infoPlistURL = infoPlistURL(bundleURL: bundleURL),
+              let info = NSDictionary(contentsOf: infoPlistURL),
+              let value = info[key] as? String,
+              !value.isEmpty else {
+            return nil
+        }
+
+        return value
+    }
+
+    nonisolated private func infoPlistURL(bundleURL: URL?) -> URL? {
+        bundleURL?.appendingPathComponent("Info.plist")
     }
 
     nonisolated private func shouldIncludeStrict(_ snapshot: AppProxySnapshot, includeSystemApps: Bool) -> Bool {

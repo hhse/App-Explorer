@@ -12,6 +12,10 @@ struct InstalledApp: Identifiable, Hashable, Sendable {
     let name: String
     let version: String
     let shortVersion: String
+    let build: String
+    let executable: String?
+    let displayName: String?
+    let bundleName: String?
     let bundleURL: URL?
     let dataURL: URL?
     let minimumOSVersion: String?
