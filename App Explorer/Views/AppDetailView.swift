@@ -122,17 +122,33 @@ private struct ExportIconButton: View {
     let language: AppLanguage
 
     @State private var exported = false
+    @State private var exportSize: IconExportSize = .size1024
     @State private var shareItem: IconShareItem?
     @State private var errorMessage: String?
     @State private var showShareSheet = false
 
     var body: some View {
         VStack(spacing: 10) {
+            HStack {
+                Text(text(.iconSize))
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.white.opacity(0.42))
+
+                Spacer()
+            }
+
+            Picker("", selection: $exportSize) {
+                ForEach(IconExportSize.allCases) { size in
+                    Text(size.title(language: language)).tag(size)
+                }
+            }
+            .pickerStyle(.segmented)
+
             Button {
                 exportIcon()
             } label: {
                 HStack {
-                    Text(exported ? text(.iconReady) : text(.exportAppIcon))
+                    Text(exported ? text(.iconReady) : exportTitle)
                         .font(.system(size: 15, weight: .semibold, design: .rounded))
 
                     Spacer()
@@ -168,6 +184,11 @@ private struct ExportIconButton: View {
             }
         }
         .animation(.spring(response: 0.28, dampingFraction: 0.86), value: exported)
+        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: exportSize)
+    }
+
+    private var exportTitle: String {
+        String(format: text(.exportIconSize), exportSize.title(language: language))
     }
 
     private func exportIcon() {
@@ -177,7 +198,12 @@ private struct ExportIconButton: View {
         }
 
         do {
-            let result = try IconExportService.export(icon: icon, appName: appName, bundleID: bundleID)
+            let result = try IconExportService.export(
+                icon: icon,
+                appName: appName,
+                bundleID: bundleID,
+                size: exportSize
+            )
             shareItem = IconShareItem(
                 data: result.data,
                 fileName: result.fileName,

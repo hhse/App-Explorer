@@ -33,6 +33,10 @@ enum LocalizedTextKey {
     case wechatOfficial
     case exportCenter
     case quickActions
+    case build
+    case iconSize
+    case originalSize
+    case exportIconSize
     case version
     case minimumIOS
     case systemBadge
@@ -91,6 +95,10 @@ enum AppText {
         case .wechatOfficial: return "公众号"
         case .exportCenter: return "导出中心"
         case .quickActions: return "快捷操作"
+        case .build: return "Build 2026"
+        case .iconSize: return "图标规格"
+        case .originalSize: return "原始尺寸"
+        case .exportIconSize: return "导出 %@"
         case .version: return "版本"
         case .minimumIOS: return "最低 iOS"
         case .systemBadge: return "系统"
@@ -140,6 +148,10 @@ enum AppText {
         case .wechatOfficial: return "Official Account"
         case .exportCenter: return "Export Center"
         case .quickActions: return "Quick Actions"
+        case .build: return "Build 2026"
+        case .iconSize: return "Icon Size"
+        case .originalSize: return "Original"
+        case .exportIconSize: return "Export %@"
         case .version: return "Version"
         case .minimumIOS: return "Min iOS"
         case .systemBadge: return "System"

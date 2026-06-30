@@ -11,6 +11,7 @@ App Explorer 是一个面向 TrollStore 环境的极简应用浏览工具。
 - 查看应用详情
 - 复制 Bundle ID、Bundle Path、Data Path
 - 导出应用图标为 PNG
+- 支持原始尺寸、1024、180、120 图标规格导出
 - 默认中文界面
 - 支持中文 / English 切换
 - 关于页内提供 Telegram、GitHub、公众号入口
@@ -52,6 +53,7 @@ App Explorer 是一个面向 TrollStore 环境的极简应用浏览工具。
 
 - 批量导出全部 App 图标
 - 支持按应用名或 Bundle ID 自动命名
+- 支持按规格导出：原始尺寸、1024x1024、180x180、120x120
 - 导出 App 元数据 JSON
 
 ### 第三阶段：开发者工具

@@ -41,32 +41,6 @@ struct AboutView: View {
                     }
 
                     AboutCard {
-                        VStack(alignment: .leading, spacing: 14) {
-                            Text(text(.contactAndLinks))
-                                .font(.system(size: 13, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color.white.opacity(0.42))
-
-                            LinkButton(
-                                title: text(.telegramChannel),
-                                systemImage: "paperplane.fill",
-                                url: "https://t.me/TheBallnow"
-                            )
-
-                            LinkButton(
-                                title: text(.githubProfile),
-                                systemImage: "chevron.left.forwardslash.chevron.right",
-                                url: "https://github.com/hhse"
-                            )
-
-                            LinkButton(
-                                title: text(.wechatOfficial),
-                                systemImage: "link",
-                                url: "https://joia.cn/"
-                            )
-                        }
-                    }
-
-                    AboutCard {
                         VStack(alignment: .leading, spacing: 10) {
                             Text(text(.currentVersion))
                                 .font(.system(size: 13, weight: .bold, design: .rounded))
@@ -75,8 +49,14 @@ struct AboutView: View {
                             Text("0.1.0")
                                 .font(.system(size: 22, weight: .bold, design: .rounded))
                                 .foregroundStyle(.white)
+
+                            Text(text(.build))
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundStyle(Color.white.opacity(0.56))
                         }
                     }
+
+                    FooterLinks()
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 24)
@@ -90,39 +70,49 @@ struct AboutView: View {
     }
 }
 
-private struct LinkButton: View {
+private struct FooterLinks: View {
+    @EnvironmentObject private var settings: AppSettings
+
+    var body: some View {
+        VStack(spacing: 10) {
+            Text(text(.contactAndLinks))
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .tracking(0.8)
+                .foregroundStyle(Color.white.opacity(0.36))
+
+            HStack(spacing: 14) {
+                FooterLink(title: text(.telegramChannel), url: "https://t.me/TheBallnow")
+                FooterDot()
+                FooterLink(title: text(.githubProfile), url: "https://github.com/hhse")
+                FooterDot()
+                FooterLink(title: text(.wechatOfficial), url: "https://joia.cn/")
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 4)
+    }
+
+    private func text(_ key: LocalizedTextKey) -> String {
+        AppText.text(key, language: settings.language)
+    }
+}
+
+private struct FooterLink: View {
     let title: String
-    let systemImage: String
     let url: String
 
     var body: some View {
-        Link(destination: URL(string: url)!) {
-            HStack(spacing: 12) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 30, height: 30)
-                    .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        Link(title, destination: URL(string: url)!)
+            .font(.system(size: 12, weight: .semibold, design: .rounded))
+            .foregroundStyle(Color.white.opacity(0.58))
+    }
+}
 
-                Text(title)
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white)
-
-                Spacer()
-
-                Image(systemName: "arrow.up.right")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.62))
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
-            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(.white.opacity(0.08), lineWidth: 1)
-            )
-        }
-        .buttonStyle(ScaleButtonStyle())
+private struct FooterDot: View {
+    var body: some View {
+        Circle()
+            .fill(Color.white.opacity(0.22))
+            .frame(width: 3, height: 3)
     }
 }
 

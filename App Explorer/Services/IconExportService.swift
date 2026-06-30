@@ -13,9 +13,57 @@ struct IconExportResult {
     let fileName: String
 }
 
+enum IconExportSize: String, CaseIterable, Identifiable {
+    case original
+    case size1024
+    case size180
+    case size120
+
+    var id: String { rawValue }
+
+    var pixels: CGFloat? {
+        switch self {
+        case .original:
+            return nil
+        case .size1024:
+            return 1024
+        case .size180:
+            return 180
+        case .size120:
+            return 120
+        }
+    }
+
+    func title(language: AppLanguage) -> String {
+        switch self {
+        case .original:
+            return AppText.text(.originalSize, language: language)
+        case .size1024:
+            return "1024x1024"
+        case .size180:
+            return "180x180"
+        case .size120:
+            return "120x120"
+        }
+    }
+
+    var fileSuffix: String {
+        switch self {
+        case .original:
+            return ""
+        case .size1024:
+            return "_1024"
+        case .size180:
+            return "_180"
+        case .size120:
+            return "_120"
+        }
+    }
+}
+
 enum IconExportService {
-    static func export(icon: UIImage, appName: String, bundleID: String) throws -> IconExportResult {
-        let fileName = "\(safeFileName(appName)).png"
+    static func export(icon: UIImage, appName: String, bundleID: String, size: IconExportSize) throws -> IconExportResult {
+        let fileName = "\(safeFileName(appName))\(size.fileSuffix).png"
         let directoryURL = FileManager.default.temporaryDirectory
             .appendingPathComponent("AppExplorerExports", isDirectory: true)
 
@@ -28,7 +76,7 @@ enum IconExportService {
             .appendingPathComponent(fileName)
         let exportImage = bestExportImage(fallbackIcon: icon, bundleID: bundleID)
 
-        guard let data = renderPNGData(from: exportImage, minimumPixelSize: 1024) else {
+        guard let data = renderPNGData(from: exportImage, targetPixelSize: size.pixels) else {
             throw IconExportError.renderFailed
         }
 
@@ -106,9 +154,9 @@ enum IconExportService {
         return whiteSamples.count >= 3
     }
 
-    private static func renderPNGData(from image: UIImage, minimumPixelSize: CGFloat) -> Data? {
+    private static func renderPNGData(from image: UIImage, targetPixelSize: CGFloat?) -> Data? {
         let currentPixels = max(image.size.width * image.scale, image.size.height * image.scale)
-        let targetPixels = max(currentPixels, minimumPixelSize)
+        let targetPixels = targetPixelSize ?? currentPixels
         let targetSize = CGSize(width: targetPixels, height: targetPixels)
 
         UIGraphicsBeginImageContextWithOptions(targetSize, false, 1)
