@@ -27,6 +27,12 @@ enum LocalizedTextKey {
     case language
     case openSource
     case currentVersion
+    case contactAndLinks
+    case telegramChannel
+    case githubProfile
+    case wechatOfficial
+    case exportCenter
+    case quickActions
     case version
     case minimumIOS
     case systemBadge
@@ -79,6 +85,12 @@ enum AppText {
         case .language: return "语言"
         case .openSource: return "开源地址"
         case .currentVersion: return "当前版本"
+        case .contactAndLinks: return "联系与链接"
+        case .telegramChannel: return "Telegram 频道"
+        case .githubProfile: return "GitHub"
+        case .wechatOfficial: return "公众号"
+        case .exportCenter: return "导出中心"
+        case .quickActions: return "快捷操作"
         case .version: return "版本"
         case .minimumIOS: return "最低 iOS"
         case .systemBadge: return "系统"
@@ -122,6 +134,12 @@ enum AppText {
         case .language: return "Language"
         case .openSource: return "Open Source"
         case .currentVersion: return "Version"
+        case .contactAndLinks: return "Links"
+        case .telegramChannel: return "Telegram"
+        case .githubProfile: return "GitHub"
+        case .wechatOfficial: return "Official Account"
+        case .exportCenter: return "Export Center"
+        case .quickActions: return "Quick Actions"
         case .version: return "Version"
         case .minimumIOS: return "Min iOS"
         case .systemBadge: return "System"

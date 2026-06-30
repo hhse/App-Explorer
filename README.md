@@ -13,7 +13,7 @@ App Explorer 是一个面向 TrollStore 环境的极简应用浏览工具。
 - 导出应用图标为 PNG
 - 默认中文界面
 - 支持中文 / English 切换
-- 关于页内展示开源地址
+- 关于页内提供 Telegram、GitHub、公众号入口
 
 ## 环境说明
 
@@ -32,9 +32,42 @@ App Explorer 是一个面向 TrollStore 环境的极简应用浏览工具。
 
 私有 API 兼容性会随 iOS 版本变化，当前版本仍处于早期开发阶段。
 
-## 开源地址
+## 链接
 
-https://github.com/hhse/App-Explorer.git
+- Telegram 频道：[TheBallnow](https://t.me/TheBallnow)
+- GitHub：[hhse](https://github.com/hhse)
+- 公众号：[joia.cn](https://joia.cn/)
+- 仓库：[hhse/App-Explorer](https://github.com/hhse/App-Explorer.git)
+
+## 建议开发路线
+
+### 第一阶段：完整的应用资源导出工具
+
+- 补充更多应用信息：Build、Team ID、Minimum iOS、Executable、Bundle Path、Data Path
+- 增加资源导出：Info.plist、App Icon、LaunchImage、Assets、Entitlements
+- 完善详情页高频复制：Bundle ID、Version、Bundle Path、Data Path
+- 建立统一的导出中心
+
+### 第二阶段：批量导出
+
+- 批量导出全部 App 图标
+- 支持按应用名或 Bundle ID 自动命名
+- 导出 App 元数据 JSON
+
+### 第三阶段：开发者工具
+
+- 查看 Info.plist
+- 查看 URL Scheme
+- 查看 LSApplicationQueriesSchemes
+- 查看 CFBundleURLTypes
+
+### 第四阶段：分析工具
+
+- 查看 Executable
+- Mach-O 基础信息
+- Architecture
+- Team ID
+- Entitlements
 
 ## 状态
 

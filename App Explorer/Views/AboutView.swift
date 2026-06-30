@@ -42,21 +42,27 @@ struct AboutView: View {
 
                     AboutCard {
                         VStack(alignment: .leading, spacing: 14) {
-                            Link(destination: URL(string: "https://github.com/hhse/App-Explorer.git")!) {
-                                SettingsRow(title: text(.openSource), systemImage: "chevron.left.forwardslash.chevron.right") {
-                                    Image(systemName: "arrow.up.right")
-                                        .font(.system(size: 14, weight: .bold))
-                                        .foregroundStyle(.white.opacity(0.72))
-                                }
-                            }
+                            Text(text(.contactAndLinks))
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.white.opacity(0.42))
 
-                            Divider()
-                                .background(Color.white.opacity(0.12))
+                            LinkButton(
+                                title: text(.telegramChannel),
+                                systemImage: "paperplane.fill",
+                                url: "https://t.me/TheBallnow"
+                            )
 
-                            Text("https://github.com/hhse/App-Explorer.git")
-                                .font(.system(size: 13, weight: .medium, design: .monospaced))
-                                .foregroundStyle(Color.white.opacity(0.58))
-                                .textSelection(.enabled)
+                            LinkButton(
+                                title: text(.githubProfile),
+                                systemImage: "chevron.left.forwardslash.chevron.right",
+                                url: "https://github.com/hhse"
+                            )
+
+                            LinkButton(
+                                title: text(.wechatOfficial),
+                                systemImage: "link",
+                                url: "https://joia.cn/"
+                            )
                         }
                     }
 
@@ -81,6 +87,42 @@ struct AboutView: View {
 
     private func text(_ key: LocalizedTextKey) -> String {
         AppText.text(key, language: settings.language)
+    }
+}
+
+private struct LinkButton: View {
+    let title: String
+    let systemImage: String
+    let url: String
+
+    var body: some View {
+        Link(destination: URL(string: url)!) {
+            HStack(spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 30, height: 30)
+                    .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                Text(title)
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+
+                Spacer()
+
+                Image(systemName: "arrow.up.right")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.62))
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+            )
+        }
+        .buttonStyle(ScaleButtonStyle())
     }
 }
 

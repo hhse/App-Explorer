@@ -37,14 +37,16 @@ struct AppDetailView: View {
                     DetailInfoCard(title: text(.iconSource), value: app.iconStatus)
                 }
 
-                VStack(spacing: 12) {
+                ActionSection(title: text(.quickActions)) {
                     CopyButton(title: text(.copyBundleID), value: app.bundleID)
                     CopyButton(title: text(.copyBundlePath), value: app.bundlePath)
 
                     if app.dataURL != nil {
                         CopyButton(title: text(.copyDataPath), value: app.dataPath)
                     }
+                }
 
+                ActionSection(title: text(.exportCenter)) {
                     ExportIconButton(
                         icon: icon,
                         appName: app.name,
@@ -58,7 +60,7 @@ struct AppDetailView: View {
             .padding(.bottom, 28)
         }
         .background(AppSurfaceBackground())
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -87,6 +89,29 @@ struct AppDetailView: View {
 
     private func text(_ key: LocalizedTextKey) -> String {
         AppText.text(key, language: settings.language)
+    }
+}
+
+private struct ActionSection<Content: View>: View {
+    let title: String
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .foregroundStyle(Color.white.opacity(0.42))
+
+            VStack(spacing: 12) {
+                content
+            }
+        }
+        .padding(16)
+        .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+        )
     }
 }
 
