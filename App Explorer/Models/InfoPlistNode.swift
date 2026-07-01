@@ -44,7 +44,15 @@ struct URLSchemeGroup: Hashable {
     let schemes: [String]
 }
 
+struct URLTypeItem: Identifiable, Hashable {
+    let id: String
+    let name: String?
+    let role: String?
+    let schemes: [String]
+}
+
 struct URLSchemeResult: Hashable {
+    let declaredURLTypes: [URLTypeItem]
     let declaredSchemes: [String]
     let queriedSchemes: [String]
 

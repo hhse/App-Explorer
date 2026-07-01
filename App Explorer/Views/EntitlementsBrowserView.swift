@@ -1,14 +1,13 @@
 //
-//  InfoPlistBrowserView.swift
+//  EntitlementsBrowserView.swift
 //  App Explorer
 //
 //  Created by Codex on 2026/7/1.
 //
 
 import SwiftUI
-import UIKit
 
-struct InfoPlistBrowserView: View {
+struct EntitlementsBrowserView: View {
     @EnvironmentObject private var settings: AppSettings
 
     let app: InstalledApp
@@ -33,7 +32,7 @@ struct InfoPlistBrowserView: View {
                 SearchBar(
                     text: $searchText,
                     isFocused: $isSearchFocused,
-                    placeholder: text(.searchPlistPlaceholder)
+                    placeholder: text(.searchEntitlementsPlaceholder)
                 )
 
                 if let errorMessage {
@@ -62,7 +61,7 @@ struct InfoPlistBrowserView: View {
             .padding(.bottom, 28)
         }
         .background(AppSurfaceBackground())
-        .navigationTitle("Info.plist")
+        .navigationTitle(text(.entitlementsBrowser))
         .navigationBarTitleDisplayMode(.inline)
         .task {
             guard nodes.isEmpty, errorMessage == nil else {
@@ -75,7 +74,7 @@ struct InfoPlistBrowserView: View {
 
     private func loadNodes() {
         do {
-            nodes = try InfoPlistBrowserService.loadNodes(for: app)
+            nodes = try EntitlementsBrowserService.loadNodes(for: app)
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription

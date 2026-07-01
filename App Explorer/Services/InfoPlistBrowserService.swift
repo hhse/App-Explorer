@@ -21,7 +21,7 @@ enum InfoPlistBrowserService {
             throw InfoPlistBrowserError.invalidInfoPlist
         }
 
-        return makeDictionaryNodes(dictionary, parentID: "root")
+        return makeNodes(from: dictionary)
     }
 
     static func filter(nodes: [InfoPlistNode], query: String) -> [InfoPlistNode] {
@@ -51,6 +51,10 @@ enum InfoPlistBrowserService {
             }
             return nil
         }
+    }
+
+    static func makeNodes(from dictionary: [String: Any]) -> [InfoPlistNode] {
+        makeDictionaryNodes(dictionary, parentID: "root")
     }
 
     private static func makeDictionaryNodes(_ dictionary: [String: Any], parentID: String) -> [InfoPlistNode] {

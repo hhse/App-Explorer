@@ -14,11 +14,16 @@ struct URLSchemesView: View {
     let app: InstalledApp
 
     @State private var searchText = ""
+    @State private var isSearchFocused = false
     @State private var result: URLSchemeResult?
     @State private var errorMessage: String?
     @State private var shareURL: URL?
     @State private var showShareSheet = false
     @State private var copiedAll = false
+
+    private var declaredURLTypes: [URLTypeItem] {
+        filterURLTypes(result?.declaredURLTypes ?? [], query: searchText)
+    }
 
     private var declaredSchemes: [String] {
         URLSchemeService.filterSchemes(result?.declaredSchemes ?? [], query: searchText)
@@ -33,6 +38,7 @@ struct URLSchemesView: View {
             VStack(alignment: .leading, spacing: 18) {
                 SearchBar(
                     text: $searchText,
+                    isFocused: $isSearchFocused,
                     placeholder: text(.searchURLSchemesPlaceholder)
                 )
 
@@ -46,13 +52,19 @@ struct URLSchemesView: View {
                         exportAction: { exportSchemes(result: result) }
                     )
 
-                    if declaredSchemes.isEmpty && queriedSchemes.isEmpty {
+                    if declaredURLTypes.isEmpty && declaredSchemes.isEmpty && queriedSchemes.isEmpty {
                         BrowserEmptyStateView(
                             title: text(.noMatch),
                             message: text(.tryAnotherKeyword)
                         )
                     } else {
                         VStack(spacing: 12) {
+                            URLTypeSection(
+                                title: text(.declaredURLTypes),
+                                items: declaredURLTypes,
+                                language: settings.language
+                            )
+
                             URLSchemeSection(
                                 title: text(.declaredURLSchemes),
                                 schemes: declaredSchemes
@@ -126,6 +138,24 @@ struct URLSchemesView: View {
         shareSchemes(result: result)
     }
 
+    private func filterURLTypes(_ items: [URLTypeItem], query: String) -> [URLTypeItem] {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedQuery.isEmpty else {
+            return items
+        }
+
+        return items.filter { item in
+            let haystack = [
+                item.name ?? "",
+                item.role ?? "",
+                item.schemes.joined(separator: " ")
+            ]
+            .joined(separator: " ")
+
+            return haystack.localizedCaseInsensitiveContains(trimmedQuery)
+        }
+    }
+
     private func text(_ key: LocalizedTextKey) -> String {
         AppText.text(key, language: settings.language)
     }
@@ -144,6 +174,34 @@ private struct URLSchemeActionBar: View {
             ActionPillButton(title: copyAllTitle, systemImage: "doc.on.doc", action: copyAllAction)
             ActionPillButton(title: shareTitle, systemImage: "square.and.arrow.up", action: shareAction)
             ActionPillButton(title: exportTitle, systemImage: "doc.text", action: exportAction)
+        }
+    }
+}
+
+private struct URLTypeSection: View {
+    let title: String
+    let items: [URLTypeItem]
+    let language: AppLanguage
+
+    var body: some View {
+        if !items.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(title)
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.white.opacity(0.42))
+
+                VStack(spacing: 10) {
+                    ForEach(items) { item in
+                        URLTypeRow(item: item, language: language)
+                    }
+                }
+            }
+            .padding(16)
+            .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+            )
         }
     }
 }
@@ -171,6 +229,53 @@ private struct URLSchemeSection: View {
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
                     .strokeBorder(.white.opacity(0.08), lineWidth: 1)
             )
+        }
+    }
+}
+
+private struct URLTypeRow: View {
+    let item: URLTypeItem
+    let language: AppLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if let name = item.name, !name.isEmpty {
+                URLTypeMetaLine(title: text(.urlTypeName), value: name)
+            }
+
+            if let role = item.role, !role.isEmpty {
+                URLTypeMetaLine(title: text(.urlTypeRole), value: role)
+            }
+
+            VStack(spacing: 8) {
+                ForEach(item.schemes, id: \.self) { scheme in
+                    URLSchemeRow(scheme: scheme)
+                }
+            }
+        }
+        .padding(14)
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private func text(_ key: LocalizedTextKey) -> String {
+        AppText.text(key, language: language)
+    }
+}
+
+private struct URLTypeMetaLine: View {
+    let title: String
+    let value: String
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text("\(title):")
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(Color.white.opacity(0.46))
+
+            Text(value)
+                .font(.system(size: 13, weight: .medium, design: .monospaced))
+                .foregroundStyle(.white.opacity(0.82))
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }

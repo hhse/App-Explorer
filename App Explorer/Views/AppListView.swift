@@ -10,11 +10,16 @@ import SwiftUI
 struct AppListView: View {
     @EnvironmentObject private var settings: AppSettings
     @ObservedObject var viewModel: AppListViewModel
+    @State private var isSearchFocused = false
 
     var body: some View {
         NavigationView {
             ZStack {
                 AppSurfaceBackground()
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        dismissKeyboard()
+                    }
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 20) {
@@ -29,6 +34,7 @@ struct AppListView: View {
 
                         SearchBar(
                             text: $viewModel.searchText,
+                            isFocused: $isSearchFocused,
                             placeholder: text(.searchPlaceholder)
                         )
 
@@ -67,6 +73,14 @@ struct AppListView: View {
                     .padding(.top, 24)
                     .padding(.bottom, 28)
                 }
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 2)
+                        .onChanged { _ in
+                            if isSearchFocused {
+                                dismissKeyboard()
+                            }
+                        }
+                )
                 .refreshable {
                     await viewModel.loadApps()
                 }
@@ -78,6 +92,16 @@ struct AppListView: View {
 
     private func text(_ key: LocalizedTextKey) -> String {
         AppText.text(key, language: settings.language)
+    }
+
+    private func dismissKeyboard() {
+        isSearchFocused = false
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil,
+            from: nil,
+            for: nil
+        )
     }
 }
 
@@ -95,6 +119,16 @@ private struct AppListRowLink: View {
                 .equatable()
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                UIApplication.shared.sendAction(
+                    #selector(UIResponder.resignFirstResponder),
+                    to: nil,
+                    from: nil,
+                    for: nil
+                )
+            }
+        )
     }
 }
 

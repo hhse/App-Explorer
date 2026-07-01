@@ -21,10 +21,14 @@ enum URLSchemeService {
             throw URLSchemeError.invalidInfoPlist
         }
 
-        let declaredSchemes = extractDeclaredSchemes(from: dictionary)
+        let declaredURLTypes = extractDeclaredURLTypes(from: dictionary)
+        let declaredSchemes = normalizedSchemes(
+            declaredURLTypes.flatMap(\.schemes)
+        )
         let queriedSchemes = extractQueriedSchemes(from: dictionary)
 
         return URLSchemeResult(
+            declaredURLTypes: declaredURLTypes,
             declaredSchemes: declaredSchemes,
             queriedSchemes: queriedSchemes
         )
@@ -39,20 +43,28 @@ enum URLSchemeService {
         return schemes.filter { $0.localizedCaseInsensitiveContains(trimmedQuery) }
     }
 
-    private static func extractDeclaredSchemes(from dictionary: [String: Any]) -> [String] {
+    private static func extractDeclaredURLTypes(from dictionary: [String: Any]) -> [URLTypeItem] {
         guard let urlTypes = dictionary["CFBundleURLTypes"] as? [[String: Any]] else {
             return []
         }
 
-        let schemes = urlTypes.flatMap { item -> [String] in
+        return urlTypes.enumerated().compactMap { index, item in
             guard let values = item["CFBundleURLSchemes"] as? [String] else {
-                return []
+                return nil
             }
 
-            return values
-        }
+            let schemes = normalizedSchemes(values)
+            guard !schemes.isEmpty else {
+                return nil
+            }
 
-        return normalizedSchemes(schemes)
+            return URLTypeItem(
+                id: "url-type-\(index)",
+                name: item["CFBundleURLName"] as? String,
+                role: item["CFBundleTypeRole"] as? String,
+                schemes: schemes
+            )
+        }
     }
 
     private static func extractQueriedSchemes(from dictionary: [String: Any]) -> [String] {

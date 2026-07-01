@@ -33,9 +33,14 @@ enum LocalizedTextKey {
     case wechatOfficial
     case developerTools
     case infoPlistBrowser
+    case entitlementsBrowser
     case urlSchemes
     case searchPlistPlaceholder
+    case searchEntitlementsPlaceholder
     case searchURLSchemesPlaceholder
+    case declaredURLTypes
+    case urlTypeName
+    case urlTypeRole
     case declaredURLSchemes
     case queriedURLSchemes
     case copyAllSchemes
@@ -114,9 +119,14 @@ enum AppText {
         case .wechatOfficial: return "公众号"
         case .developerTools: return "开发者工具"
         case .infoPlistBrowser: return "Info.plist 浏览器"
+        case .entitlementsBrowser: return "Entitlements 浏览器"
         case .urlSchemes: return "URL Schemes"
         case .searchPlistPlaceholder: return "搜索 Info.plist Key 或内容"
+        case .searchEntitlementsPlaceholder: return "搜索 Entitlements Key 或内容"
         case .searchURLSchemesPlaceholder: return "搜索 URL Scheme"
+        case .declaredURLTypes: return "声明的 URL Types"
+        case .urlTypeName: return "名称"
+        case .urlTypeRole: return "角色"
         case .declaredURLSchemes: return "声明的 URL Schemes"
         case .queriedURLSchemes: return "查询白名单 Schemes"
         case .copyAllSchemes: return "复制全部 Schemes"
@@ -186,9 +196,14 @@ enum AppText {
         case .wechatOfficial: return "Official Account"
         case .developerTools: return "Developer Tools"
         case .infoPlistBrowser: return "Info.plist Browser"
+        case .entitlementsBrowser: return "Entitlements Browser"
         case .urlSchemes: return "URL Schemes"
         case .searchPlistPlaceholder: return "Search Info.plist keys or values"
+        case .searchEntitlementsPlaceholder: return "Search entitlement keys or values"
         case .searchURLSchemesPlaceholder: return "Search URL schemes"
+        case .declaredURLTypes: return "Declared URL Types"
+        case .urlTypeName: return "Name"
+        case .urlTypeRole: return "Role"
         case .declaredURLSchemes: return "Declared URL Schemes"
         case .queriedURLSchemes: return "Queried URL Schemes"
         case .copyAllSchemes: return "Copy All Schemes"

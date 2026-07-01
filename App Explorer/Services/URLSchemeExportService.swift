@@ -38,11 +38,42 @@ enum URLSchemeExportService {
         lines.append(app.name)
         lines.append(app.bundleID)
         lines.append("")
+        lines.append("[Declared URL Types]")
+
+        if result.declaredURLTypes.isEmpty {
+            lines.append("(none)")
+        } else {
+            for item in result.declaredURLTypes {
+                if let name = item.name, !name.isEmpty {
+                    lines.append("Name: \(name)")
+                }
+
+                if let role = item.role, !role.isEmpty {
+                    lines.append("Role: \(role)")
+                }
+
+                lines.append("Schemes:")
+                lines.append(contentsOf: item.schemes.map { "- \($0)://" })
+                lines.append("")
+            }
+        }
+
         lines.append("[Declared URL Schemes]")
-        lines.append(contentsOf: result.declaredSchemes.map { "\($0)://" })
+
+        if result.declaredSchemes.isEmpty {
+            lines.append("(none)")
+        } else {
+            lines.append(contentsOf: result.declaredSchemes.map { "\($0)://" })
+        }
+
         lines.append("")
         lines.append("[Queried URL Schemes]")
-        lines.append(contentsOf: result.queriedSchemes.map { "\($0)://" })
+
+        if result.queriedSchemes.isEmpty {
+            lines.append("(none)")
+        } else {
+            lines.append(contentsOf: result.queriedSchemes.map { "\($0)://" })
+        }
 
         return lines.joined(separator: "\n")
     }

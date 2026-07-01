@@ -9,8 +9,9 @@ import SwiftUI
 
 struct SearchBar: View {
     @Binding var text: String
+    @Binding var isFocused: Bool
     var placeholder = "Search apps or Bundle ID"
-    @FocusState private var isFocused: Bool
+    @FocusState private var fieldIsFocused: Bool
 
     var body: some View {
         HStack(spacing: 12) {
@@ -19,7 +20,7 @@ struct SearchBar: View {
                 .foregroundStyle(Color.white.opacity(0.58))
 
             TextField(placeholder, text: $text)
-                .focused($isFocused)
+                .focused($fieldIsFocused)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .font(.system(size: 15, weight: .medium))
@@ -43,7 +44,17 @@ struct SearchBar: View {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .strokeBorder(.white.opacity(isFocused ? 0.18 : 0.08), lineWidth: 1)
         )
-        .animation(.spring(response: 0.25, dampingFraction: 0.86), value: isFocused)
+        .animation(.spring(response: 0.25, dampingFraction: 0.86), value: fieldIsFocused)
         .animation(.spring(response: 0.25, dampingFraction: 0.86), value: text.isEmpty)
+        .onChange(of: fieldIsFocused) { newValue in
+            if isFocused != newValue {
+                isFocused = newValue
+            }
+        }
+        .onChange(of: isFocused) { newValue in
+            if fieldIsFocused != newValue {
+                fieldIsFocused = newValue
+            }
+        }
     }
 }

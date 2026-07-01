@@ -65,6 +65,10 @@ struct AppDetailView: View {
                         InfoPlistBrowserView(app: app)
                     }
 
+                    NavigationToolButton(title: text(.entitlementsBrowser), systemImage: "checkmark.shield") {
+                        EntitlementsBrowserView(app: app)
+                    }
+
                     NavigationToolButton(title: text(.urlSchemes), systemImage: "link") {
                         URLSchemesView(app: app)
                     }
