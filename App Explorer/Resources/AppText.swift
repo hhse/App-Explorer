@@ -31,6 +31,18 @@ enum LocalizedTextKey {
     case telegramChannel
     case githubProfile
     case wechatOfficial
+    case developerTools
+    case infoPlistBrowser
+    case urlSchemes
+    case searchPlistPlaceholder
+    case searchURLSchemesPlaceholder
+    case declaredURLSchemes
+    case queriedURLSchemes
+    case copyAllSchemes
+    case shareSchemes
+    case exportSchemesTXT
+    case dictionaryCount
+    case arrayCount
     case exportCenter
     case quickActions
     case build
@@ -55,9 +67,9 @@ enum LocalizedTextKey {
     case copyBundlePath
     case copyDataPath
     case exportAppIcon
-    case exportInfoPlist
+    case exportEntitlements
     case iconReady
-    case infoPlistReady
+    case entitlementsReady
     case noIconAvailable
     case unavailable
     case backToApps
@@ -97,9 +109,21 @@ enum AppText {
         case .openSource: return "开源地址"
         case .currentVersion: return "当前版本"
         case .contactAndLinks: return "联系与链接"
-        case .telegramChannel: return "Telegram 频道"
+        case .telegramChannel: return "Telegram"
         case .githubProfile: return "GitHub"
         case .wechatOfficial: return "公众号"
+        case .developerTools: return "开发者工具"
+        case .infoPlistBrowser: return "Info.plist 浏览器"
+        case .urlSchemes: return "URL Schemes"
+        case .searchPlistPlaceholder: return "搜索 Info.plist Key 或内容"
+        case .searchURLSchemesPlaceholder: return "搜索 URL Scheme"
+        case .declaredURLSchemes: return "声明的 URL Schemes"
+        case .queriedURLSchemes: return "查询白名单 Schemes"
+        case .copyAllSchemes: return "复制全部 Schemes"
+        case .shareSchemes: return "分享 Schemes"
+        case .exportSchemesTXT: return "导出 TXT"
+        case .dictionaryCount: return "字典项"
+        case .arrayCount: return "数组项"
         case .exportCenter: return "导出中心"
         case .quickActions: return "快捷操作"
         case .build: return "Build 2026"
@@ -124,9 +148,9 @@ enum AppText {
         case .copyBundlePath: return "复制 Bundle 路径"
         case .copyDataPath: return "复制数据路径"
         case .exportAppIcon: return "导出应用图标"
-        case .exportInfoPlist: return "导出 Info.plist"
+        case .exportEntitlements: return "导出 Entitlements"
         case .iconReady: return "图标已就绪"
-        case .infoPlistReady: return "Info.plist 已就绪"
+        case .entitlementsReady: return "Entitlements 已就绪"
         case .noIconAvailable: return "当前应用没有可用图标。"
         case .unavailable: return "不可用"
         case .backToApps: return "应用"
@@ -160,6 +184,18 @@ enum AppText {
         case .telegramChannel: return "Telegram"
         case .githubProfile: return "GitHub"
         case .wechatOfficial: return "Official Account"
+        case .developerTools: return "Developer Tools"
+        case .infoPlistBrowser: return "Info.plist Browser"
+        case .urlSchemes: return "URL Schemes"
+        case .searchPlistPlaceholder: return "Search Info.plist keys or values"
+        case .searchURLSchemesPlaceholder: return "Search URL schemes"
+        case .declaredURLSchemes: return "Declared URL Schemes"
+        case .queriedURLSchemes: return "Queried URL Schemes"
+        case .copyAllSchemes: return "Copy All Schemes"
+        case .shareSchemes: return "Share Schemes"
+        case .exportSchemesTXT: return "Export TXT"
+        case .dictionaryCount: return "Dictionary Items"
+        case .arrayCount: return "Array Items"
         case .exportCenter: return "Export Center"
         case .quickActions: return "Quick Actions"
         case .build: return "Build 2026"
@@ -184,9 +220,9 @@ enum AppText {
         case .copyBundlePath: return "Copy Bundle Path"
         case .copyDataPath: return "Copy Data Path"
         case .exportAppIcon: return "Export App Icon"
-        case .exportInfoPlist: return "Export Info.plist"
+        case .exportEntitlements: return "Export Entitlements"
         case .iconReady: return "Icon Ready"
-        case .infoPlistReady: return "Info.plist Ready"
+        case .entitlementsReady: return "Entitlements Ready"
         case .noIconAvailable: return "No icon is available for this app."
         case .unavailable: return "Unavailable"
         case .backToApps: return "Apps"

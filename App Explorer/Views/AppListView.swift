@@ -48,24 +48,10 @@ struct AppListView: View {
                         }
 
                         LazyVStack(spacing: 14) {
-                            ForEach(Array(viewModel.filteredApps.enumerated()), id: \.element.id) { index, app in
-                                NavigationLink {
-                                    AppDetailView(
-                                        app: app,
-                                        icon: viewModel.icon(for: app)
-                                    )
-                                } label: {
-                                    AppRow(
-                                        app: app,
-                                        icon: viewModel.icon(for: app)
-                                    )
-                                }
-                                .buttonStyle(.plain)
-                                .transition(.move(edge: .bottom).combined(with: .opacity))
-                                .animation(
-                                    .spring(response: 0.36, dampingFraction: 0.86)
-                                        .delay(Double(min(index, 8)) * 0.025),
-                                    value: viewModel.filteredApps.count
+                            ForEach(viewModel.filteredApps) { app in
+                                AppListRowLink(
+                                    app: app,
+                                    icon: viewModel.icon(for: app)
                                 )
                             }
                         }
@@ -92,6 +78,35 @@ struct AppListView: View {
 
     private func text(_ key: LocalizedTextKey) -> String {
         AppText.text(key, language: settings.language)
+    }
+}
+
+private struct AppListRowLink: View {
+    let app: InstalledApp
+    let icon: UIImage?
+
+    var body: some View {
+        NavigationLink {
+            LazyDestinationView {
+                AppDetailView(app: app, icon: icon)
+            }
+        } label: {
+            AppRow(app: app, icon: icon)
+                .equatable()
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct LazyDestinationView<Content: View>: View {
+    let build: () -> Content
+
+    init(@ViewBuilder _ build: @escaping () -> Content) {
+        self.build = build
+    }
+
+    var body: some View {
+        build()
     }
 }
 

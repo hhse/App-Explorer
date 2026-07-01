@@ -58,26 +58,24 @@ struct AppRow: View {
         }
         .padding(16)
         .background(
-            LinearGradient(
-                colors: [
-                    Color.white.opacity(0.11),
-                    Color.white.opacity(0.05)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
+            Color.white.opacity(0.08),
             in: RoundedRectangle(cornerRadius: 24, style: .continuous)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .strokeBorder(Color.white.opacity(0.10), lineWidth: 1)
         )
-        .shadow(color: Color.black.opacity(0.20), radius: 20, x: 0, y: 12)
         .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
     }
 
     private func text(_ key: LocalizedTextKey) -> String {
         AppText.text(key, language: settings.language)
+    }
+}
+
+extension AppRow: Equatable {
+    static func == (lhs: AppRow, rhs: AppRow) -> Bool {
+        lhs.app == rhs.app && lhs.icon === rhs.icon
     }
 }
 

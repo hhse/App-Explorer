@@ -42,6 +42,5 @@ struct AppIconView: View {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .strokeBorder(.white.opacity(0.10), lineWidth: 1)
         )
-        .shadow(color: Color.black.opacity(0.24), radius: 12, x: 0, y: 8)
     }
 }

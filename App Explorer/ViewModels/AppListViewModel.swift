@@ -11,8 +11,13 @@ import UIKit
 
 @MainActor
 final class AppListViewModel: ObservableObject {
-    @Published var apps: [InstalledApp] = []
-    @Published var searchText = ""
+    @Published var apps: [InstalledApp] = [] {
+        didSet { updateFilteredApps() }
+    }
+    @Published var searchText = "" {
+        didSet { updateFilteredApps() }
+    }
+    @Published private(set) var filteredApps: [InstalledApp] = []
     @Published var isLoading = false
     @Published var showSystemApps = false
     @Published var lastUpdatedAt: Date?
@@ -22,7 +27,15 @@ final class AppListViewModel: ObservableObject {
     private let iconService = IconService.shared
     private var icons: [String: Data] = [:]
 
-    var filteredApps: [InstalledApp] {
+    init() {
+        updateFilteredApps()
+    }
+
+    private func updateFilteredApps() {
+        filteredApps = Self.filterApps(apps, searchText)
+    }
+
+    private static func filterApps(_ apps: [InstalledApp], _ searchText: String) -> [InstalledApp] {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return apps }
 
@@ -39,9 +52,12 @@ final class AppListViewModel: ObservableObject {
 
         do {
             let includeSystemApps = showSystemApps
+            let service = ApplicationService()
             let result = try await Task.detached(priority: .userInitiated) {
-                try ApplicationService().fetchInstalledApps(includeSystemApps: includeSystemApps)
+                try service.fetchInstalledApps(includeSystemApps: includeSystemApps)
             }.value
+
+            iconService.preload(result.icons)
 
             apps = result.apps
             icons = result.icons

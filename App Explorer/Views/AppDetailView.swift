@@ -60,6 +60,16 @@ struct AppDetailView: View {
                     }
                 }
 
+                ActionSection(title: text(.developerTools)) {
+                    NavigationToolButton(title: text(.infoPlistBrowser), systemImage: "doc.text.magnifyingglass") {
+                        InfoPlistBrowserView(app: app)
+                    }
+
+                    NavigationToolButton(title: text(.urlSchemes), systemImage: "link") {
+                        URLSchemesView(app: app)
+                    }
+                }
+
                 ActionSection(title: text(.exportCenter)) {
                     ExportIconButton(
                         icon: icon,
@@ -68,15 +78,16 @@ struct AppDetailView: View {
                         language: settings.language
                     )
 
-                    ExportInfoPlistButton(app: app, language: settings.language)
+                    ExportEntitlementsButton(app: app, language: settings.language)
                 }
             }
             .padding(.horizontal, 20)
             .padding(.top, 20)
             .padding(.bottom, 28)
         }
+        .background(InteractivePopGestureEnabler())
         .background(AppSurfaceBackground())
-            .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -105,6 +116,77 @@ struct AppDetailView: View {
 
     private func text(_ key: LocalizedTextKey) -> String {
         AppText.text(key, language: settings.language)
+    }
+}
+
+private struct InteractivePopGestureEnabler: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> InteractivePopGestureViewController {
+        InteractivePopGestureViewController()
+    }
+
+    func updateUIViewController(_ uiViewController: InteractivePopGestureViewController, context: Context) {
+        uiViewController.enableInteractivePopGestureIfNeeded()
+    }
+}
+
+private final class InteractivePopGestureViewController: UIViewController, UIGestureRecognizerDelegate {
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        enableInteractivePopGestureIfNeeded()
+    }
+
+    func enableInteractivePopGestureIfNeeded() {
+        guard let navigationController else {
+            return
+        }
+
+        navigationController.interactivePopGestureRecognizer?.isEnabled = true
+        navigationController.interactivePopGestureRecognizer?.delegate = self
+    }
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        (navigationController?.viewControllers.count ?? 0) > 1
+    }
+}
+
+private struct NavigationToolButton<Destination: View>: View {
+    let title: String
+    let systemImage: String
+    let destination: Destination
+
+    init(
+        title: String,
+        systemImage: String,
+        @ViewBuilder destination: () -> Destination
+    ) {
+        self.title = title
+        self.systemImage = systemImage
+        self.destination = destination()
+    }
+
+    var body: some View {
+        NavigationLink {
+            destination
+        } label: {
+            HStack {
+                Text(title)
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+
+                Spacer()
+
+                Image(systemName: systemImage)
+                    .font(.system(size: 15, weight: .bold))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 16)
+            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .strokeBorder(.white.opacity(0.10), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -188,7 +270,7 @@ private struct ExportIconButton: View {
             .buttonStyle(ScaleButtonStyle())
             .sheet(isPresented: $showShareSheet) {
                 if let shareItem {
-                    ShareSheet(activityItems: [shareItem])
+                    ShareSheet(activityItems: [shareItem.url])
                 }
             }
 
@@ -221,7 +303,7 @@ private struct ExportIconButton: View {
                 size: exportSize
             )
             shareItem = FileShareItem(
-                data: result.data,
+                url: result.url,
                 fileName: result.fileName,
                 title: appName,
                 typeIdentifier: "public.png"
@@ -245,7 +327,7 @@ private struct ExportIconButton: View {
     }
 }
 
-private struct ExportInfoPlistButton: View {
+private struct ExportEntitlementsButton: View {
     let app: InstalledApp
     let language: AppLanguage
 
@@ -257,15 +339,15 @@ private struct ExportInfoPlistButton: View {
     var body: some View {
         VStack(spacing: 8) {
             Button {
-                exportInfoPlist()
+                exportEntitlements()
             } label: {
                 HStack {
-                    Text(exported ? text(.infoPlistReady) : text(.exportInfoPlist))
+                    Text(exported ? text(.entitlementsReady) : text(.exportEntitlements))
                         .font(.system(size: 15, weight: .semibold, design: .rounded))
 
                     Spacer()
 
-                    Image(systemName: exported ? "checkmark" : "doc.badge.gearshape")
+                    Image(systemName: exported ? "checkmark" : "checkmark.shield")
                         .font(.system(size: 15, weight: .bold))
                 }
                 .foregroundStyle(.white)
@@ -283,7 +365,7 @@ private struct ExportInfoPlistButton: View {
             .buttonStyle(ScaleButtonStyle())
             .sheet(isPresented: $showShareSheet) {
                 if let shareItem {
-                    ShareSheet(activityItems: [shareItem])
+                    ShareSheet(activityItems: [shareItem.url])
                 }
             }
 
@@ -297,11 +379,11 @@ private struct ExportInfoPlistButton: View {
         .animation(.spring(response: 0.28, dampingFraction: 0.86), value: exported)
     }
 
-    private func exportInfoPlist() {
+    private func exportEntitlements() {
         do {
-            let result = try InfoPlistExportService.export(app: app)
+            let result = try EntitlementsExportService.export(app: app)
             shareItem = FileShareItem(
-                data: result.data,
+                url: result.url,
                 fileName: result.fileName,
                 title: app.name,
                 typeIdentifier: "com.apple.property-list"
@@ -326,24 +408,24 @@ private struct ExportInfoPlistButton: View {
 }
 
 private final class FileShareItem: NSObject, UIActivityItemSource {
-    let data: Data
+    let url: URL
     let fileName: String
     let title: String
     let typeIdentifier: String
 
-    init(data: Data, fileName: String, title: String, typeIdentifier: String) {
-        self.data = data
+    init(url: URL, fileName: String, title: String, typeIdentifier: String) {
+        self.url = url
         self.fileName = fileName
         self.title = title
         self.typeIdentifier = typeIdentifier
     }
 
     func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        data
+        url
     }
 
     func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
-        data
+        url
     }
 
     func activityViewController(_ activityViewController: UIActivityViewController, subjectForActivityType activityType: UIActivity.ActivityType?) -> String {
@@ -353,16 +435,6 @@ private final class FileShareItem: NSObject, UIActivityItemSource {
     func activityViewController(_ activityViewController: UIActivityViewController, dataTypeIdentifierForActivityType activityType: UIActivity.ActivityType?) -> String {
         typeIdentifier
     }
-}
-
-private struct ShareSheet: UIViewControllerRepresentable {
-    let activityItems: [Any]
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
-    }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 private struct HeroDetailHeader: View {

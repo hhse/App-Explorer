@@ -27,13 +27,13 @@ struct AppSurfaceBackground: View {
             Circle()
                 .fill(Color(red: 0.16, green: 0.64, blue: 0.74).opacity(0.20))
                 .frame(width: 280, height: 280)
-                .blur(radius: 40)
+                .blur(radius: 18)
                 .offset(x: 120, y: -260)
 
             Circle()
                 .fill(Color(red: 0.28, green: 0.36, blue: 0.92).opacity(0.16))
                 .frame(width: 240, height: 240)
-                .blur(radius: 44)
+                .blur(radius: 20)
                 .offset(x: -140, y: -120)
 
             Rectangle()
@@ -48,7 +48,7 @@ struct AppSurfaceBackground: View {
                         endPoint: .bottom
                     )
                 )
-                .blendMode(.softLight)
+                .opacity(0.28)
                 .ignoresSafeArea()
         }
     }

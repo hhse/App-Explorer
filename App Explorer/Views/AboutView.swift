@@ -85,7 +85,7 @@ private struct FooterLinks: View {
                 FooterDot()
                 FooterLink(title: text(.githubProfile), url: "https://github.com/hhse")
                 FooterDot()
-                FooterLink(title: text(.wechatOfficial), url: "https://joia.cn/")
+                FooterLink(title: text(.wechatOfficial), url: "https://joia.cn/wx/8d5f06da-0b3d-4c4f-b858-f9ffd39d5677")
             }
         }
         .frame(maxWidth: .infinity)

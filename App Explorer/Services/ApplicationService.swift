@@ -30,15 +30,15 @@ struct ApplicationService: Sendable {
         let strictSnapshots = snapshots.filter { shouldIncludeStrict($0, includeSystemApps: includeSystemApps) }
         let fallbackSnapshots = snapshots.filter { shouldIncludeFallback($0, includeSystemApps: includeSystemApps) }
         let lastResortSnapshots = snapshots.filter(shouldIncludeLastResort)
-        let selectedSnapshots: [AppProxySnapshot]
+        let selectedSnapshots = mergeSnapshots(
+            primary: strictSnapshots,
+            secondary: fallbackSnapshots,
+            fallback: lastResortSnapshots
+        )
 
-        if !strictSnapshots.isEmpty {
-            selectedSnapshots = strictSnapshots
-        } else if !fallbackSnapshots.isEmpty {
-            selectedSnapshots = fallbackSnapshots
-        } else {
-            selectedSnapshots = lastResortSnapshots
-        }
+        let selectedBundleIDs = Set(selectedSnapshots.map(\.bundleIdentifier))
+        let strictBundleIDs = Set(strictSnapshots.map(\.bundleIdentifier))
+        let fallbackBundleIDs = Set(fallbackSnapshots.map(\.bundleIdentifier))
 
         let apps = selectedSnapshots
             .map { snapshot in
@@ -60,7 +60,8 @@ struct ApplicationService: Sendable {
                     minimumOSVersion: snapshot.minimumSystemVersion,
                     isSystem: snapshot.isSystemApp,
                     applicationType: snapshot.applicationType,
-                    iconStatus: snapshot.iconStatus
+                    iconStatus: snapshot.iconStatus,
+                    entitlementsData: snapshot.entitlementsData
                 )
             }
             .sorted {
@@ -79,11 +80,34 @@ struct ApplicationService: Sendable {
             strictCount: strictSnapshots.count,
             fallbackCount: fallbackSnapshots.count,
             visibleCount: selectedSnapshots.count,
-            usedFallback: strictSnapshots.isEmpty && !fallbackSnapshots.isEmpty,
+            usedFallback: !selectedBundleIDs.isSubset(of: strictBundleIDs) && !fallbackBundleIDs.isEmpty,
             usedLastResort: strictSnapshots.isEmpty && fallbackSnapshots.isEmpty
         )
 
         return AppScanResult(apps: apps, icons: iconMap, summary: summary)
+    }
+
+    nonisolated private func mergeSnapshots(
+        primary: [AppProxySnapshot],
+        secondary: [AppProxySnapshot],
+        fallback: [AppProxySnapshot]
+    ) -> [AppProxySnapshot] {
+        if primary.isEmpty && secondary.isEmpty {
+            return fallback
+        }
+
+        var merged: [AppProxySnapshot] = []
+        var seenBundleIDs: Set<String> = []
+
+        for snapshot in primary + secondary {
+            guard seenBundleIDs.insert(snapshot.bundleIdentifier).inserted else {
+                continue
+            }
+
+            merged.append(snapshot)
+        }
+
+        return merged
     }
 
     nonisolated private func infoValue(_ key: String, bundleURL: URL?) -> String? {

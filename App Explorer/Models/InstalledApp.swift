@@ -22,6 +22,7 @@ struct InstalledApp: Identifiable, Hashable, Sendable {
     let isSystem: Bool
     let applicationType: String
     let iconStatus: String
+    let entitlementsData: Data?
 
     var id: String { bundleID }
 

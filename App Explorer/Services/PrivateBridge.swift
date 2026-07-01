@@ -24,6 +24,7 @@ struct AppProxySnapshot: Sendable {
     let isRestricted: Bool
     let iconData: Data?
     let iconStatus: String
+    let entitlementsData: Data?
 }
 
 enum PrivateBridgeError: LocalizedError {
@@ -114,6 +115,7 @@ enum PrivateBridge {
         let isRestricted = readBool(on: proxy, selector: "isRestricted") ?? false
 
         let iconResult = loadIconData(from: proxy, bundleIdentifier: bundleIdentifier)
+        let entitlementsData = loadEntitlementsData(from: proxy)
 
         return AppProxySnapshot(
             bundleIdentifier: bundleIdentifier,
@@ -128,8 +130,62 @@ enum PrivateBridge {
             isLaunchProhibited: isLaunchProhibited,
             isRestricted: isRestricted,
             iconData: iconResult.data,
-            iconStatus: iconResult.status
+            iconStatus: iconResult.status,
+            entitlementsData: entitlementsData
         )
+    }
+
+    nonisolated private static func loadEntitlementsData(from proxy: AnyObject) -> Data? {
+        let selectors = [
+            "entitlements",
+            "_entitlements",
+            "signatureInfo"
+        ]
+
+        for selectorName in selectors {
+            guard let object = performObjectSelector(on: proxy, selector: selectorName) else {
+                continue
+            }
+
+            if let dictionary = object as? [String: Any],
+               let data = try? PropertyListSerialization.data(
+                fromPropertyList: dictionary,
+                format: .xml,
+                options: 0
+               ) {
+                return data
+            }
+
+            if let dictionary = object as? NSDictionary,
+               let data = try? PropertyListSerialization.data(
+                fromPropertyList: dictionary,
+                format: .xml,
+                options: 0
+               ) {
+                return data
+            }
+
+            if selectorName == "signatureInfo",
+               let dictionary = object as? [String: Any] {
+                let entitlementKeys = [
+                    "Entitlements",
+                    "entitlements"
+                ]
+
+                for key in entitlementKeys {
+                    if let entitlements = dictionary[key] as? [String: Any],
+                       let data = try? PropertyListSerialization.data(
+                        fromPropertyList: entitlements,
+                        format: .xml,
+                        options: 0
+                       ) {
+                        return data
+                    }
+                }
+            }
+        }
+
+        return nil
     }
 
     nonisolated private static func loadIconData(from proxy: AnyObject, bundleIdentifier: String) -> (data: Data?, status: String) {

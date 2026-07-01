@@ -82,10 +82,6 @@ enum IconExportService {
 
         try data.write(to: url, options: .atomic)
 
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            throw IconExportError.fileMissing
-        }
-
         return IconExportResult(url: url, data: data, fileName: fileName)
     }
 
@@ -179,14 +175,11 @@ enum IconExportService {
 
 enum IconExportError: LocalizedError {
     case renderFailed
-    case fileMissing
 
     var errorDescription: String? {
         switch self {
         case .renderFailed:
             return "Could not render the icon as PNG."
-        case .fileMissing:
-            return "The exported PNG file could not be found."
         }
     }
 }
