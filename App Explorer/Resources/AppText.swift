@@ -35,6 +35,7 @@ enum LocalizedTextKey {
     case infoPlistBrowser
     case entitlementsBrowser
     case permissions
+    case frameworkBrowser
     case urlSchemes
     case searchPlistPlaceholder
     case searchEntitlementsPlaceholder
@@ -87,6 +88,9 @@ enum LocalizedTextKey {
     case noPermissionsFound
     case permissionsEmptyHint
     case noPermissionReason
+    case frameworkCount
+    case noFrameworksFound
+    case frameworksEmptyHint
     case backToApps
     case copied
     case scanFailed
@@ -131,6 +135,7 @@ enum AppText {
         case .infoPlistBrowser: return "Info.plist 浏览器"
         case .entitlementsBrowser: return "Entitlements 浏览器"
         case .permissions: return "Permissions"
+        case .frameworkBrowser: return "Framework Browser"
         case .urlSchemes: return "URL Schemes"
         case .searchPlistPlaceholder: return "搜索 Info.plist Key 或内容"
         case .searchEntitlementsPlaceholder: return "搜索 Entitlements Key 或内容"
@@ -183,6 +188,9 @@ enum AppText {
         case .noPermissionsFound: return "未识别到权限"
         case .permissionsEmptyHint: return "这个应用没有可展示的权限声明或推送配置。"
         case .noPermissionReason: return "没有在 Info.plist 中找到可展示的说明文案。"
+        case .frameworkCount: return "共 %d 个 Framework"
+        case .noFrameworksFound: return "没有找到 Framework"
+        case .frameworksEmptyHint: return "这个应用没有解析出任何 Framework 依赖。"
         case .backToApps: return "应用"
         case .copied: return "已复制"
         case .scanFailed: return "扫描失败"
@@ -218,6 +226,7 @@ enum AppText {
         case .infoPlistBrowser: return "Info.plist Browser"
         case .entitlementsBrowser: return "Entitlements Browser"
         case .permissions: return "Permissions"
+        case .frameworkBrowser: return "Framework Browser"
         case .urlSchemes: return "URL Schemes"
         case .searchPlistPlaceholder: return "Search Info.plist keys or values"
         case .searchEntitlementsPlaceholder: return "Search entitlement keys or values"
@@ -270,6 +279,9 @@ enum AppText {
         case .noPermissionsFound: return "No permissions detected"
         case .permissionsEmptyHint: return "This app does not expose supported permission strings or push-related config."
         case .noPermissionReason: return "No displayable usage description was found in Info.plist."
+        case .frameworkCount: return "%d Frameworks"
+        case .noFrameworksFound: return "No frameworks found"
+        case .frameworksEmptyHint: return "This app did not resolve any framework dependencies."
         case .backToApps: return "Apps"
         case .copied: return "Copied"
         case .scanFailed: return "Scan Failed"

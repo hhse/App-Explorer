@@ -49,4 +49,12 @@ struct InstalledApp: Identifiable, Hashable, Sendable {
     var documentsURL: URL? {
         dataURL?.appendingPathComponent("Documents", isDirectory: true)
     }
+
+    var executableURL: URL? {
+        guard let bundleURL, let executable, !executable.isEmpty else {
+            return nil
+        }
+
+        return bundleURL.appendingPathComponent(executable)
+    }
 }

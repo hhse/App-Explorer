@@ -80,6 +80,10 @@ struct AppDetailView: View {
                         PermissionsView(app: app)
                     }
 
+                    NavigationToolButton(title: text(.frameworkBrowser), systemImage: "shippingbox.fill") {
+                        FrameworkBrowserView(app: app)
+                    }
+
                     NavigationToolButton(title: text(.infoPlistBrowser), systemImage: "doc.text.magnifyingglass") {
                         InfoPlistBrowserView(app: app)
                     }
