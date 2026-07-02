@@ -45,4 +45,8 @@ struct InstalledApp: Identifiable, Hashable, Sendable {
     var dataPath: String {
         dataURL?.path ?? "Unavailable"
     }
+
+    var documentsURL: URL? {
+        dataURL?.appendingPathComponent("Documents", isDirectory: true)
+    }
 }

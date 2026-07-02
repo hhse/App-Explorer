@@ -9,6 +9,10 @@ import Foundation
 
 enum EntitlementsBrowserService {
     static func loadNodes(for app: InstalledApp) throws -> [InfoPlistNode] {
+        try InfoPlistBrowserService.makeNodes(from: loadDictionary(for: app))
+    }
+
+    static func loadDictionary(for app: InstalledApp) throws -> [String: Any] {
         guard let data = app.entitlementsData, !data.isEmpty else {
             throw EntitlementsBrowserError.missingEntitlements
         }
@@ -19,7 +23,7 @@ enum EntitlementsBrowserService {
             throw EntitlementsBrowserError.invalidEntitlements
         }
 
-        return InfoPlistBrowserService.makeNodes(from: dictionary)
+        return dictionary
     }
 }
 

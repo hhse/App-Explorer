@@ -34,6 +34,7 @@ enum LocalizedTextKey {
     case developerTools
     case infoPlistBrowser
     case entitlementsBrowser
+    case permissions
     case urlSchemes
     case searchPlistPlaceholder
     case searchEntitlementsPlaceholder
@@ -66,17 +67,26 @@ enum LocalizedTextKey {
     case bundleID
     case bundlePath
     case dataPath
+    case documentsSize
+    case dataSize
     case applicationType
     case iconSource
     case copyBundleID
     case copyBundlePath
     case copyDataPath
+    case reason
+    case sourceKey
+    case detectedBy
     case exportAppIcon
     case exportEntitlements
     case iconReady
     case entitlementsReady
     case noIconAvailable
     case unavailable
+    case calculating
+    case noPermissionsFound
+    case permissionsEmptyHint
+    case noPermissionReason
     case backToApps
     case copied
     case scanFailed
@@ -120,6 +130,7 @@ enum AppText {
         case .developerTools: return "开发者工具"
         case .infoPlistBrowser: return "Info.plist 浏览器"
         case .entitlementsBrowser: return "Entitlements 浏览器"
+        case .permissions: return "Permissions"
         case .urlSchemes: return "URL Schemes"
         case .searchPlistPlaceholder: return "搜索 Info.plist Key 或内容"
         case .searchEntitlementsPlaceholder: return "搜索 Entitlements Key 或内容"
@@ -152,17 +163,26 @@ enum AppText {
         case .bundleID: return "Bundle ID"
         case .bundlePath: return "Bundle 路径"
         case .dataPath: return "数据路径"
+        case .documentsSize: return "Documents"
+        case .dataSize: return "Data"
         case .applicationType: return "应用类型"
         case .iconSource: return "图标来源"
         case .copyBundleID: return "复制 Bundle ID"
         case .copyBundlePath: return "复制 Bundle 路径"
         case .copyDataPath: return "复制数据路径"
+        case .reason: return "原因"
+        case .sourceKey: return "来源 Key"
+        case .detectedBy: return "检测依据"
         case .exportAppIcon: return "导出应用图标"
         case .exportEntitlements: return "导出 Entitlements"
         case .iconReady: return "图标已就绪"
         case .entitlementsReady: return "Entitlements 已就绪"
         case .noIconAvailable: return "当前应用没有可用图标。"
         case .unavailable: return "不可用"
+        case .calculating: return "计算中"
+        case .noPermissionsFound: return "未识别到权限"
+        case .permissionsEmptyHint: return "这个应用没有可展示的权限声明或推送配置。"
+        case .noPermissionReason: return "没有在 Info.plist 中找到可展示的说明文案。"
         case .backToApps: return "应用"
         case .copied: return "已复制"
         case .scanFailed: return "扫描失败"
@@ -197,6 +217,7 @@ enum AppText {
         case .developerTools: return "Developer Tools"
         case .infoPlistBrowser: return "Info.plist Browser"
         case .entitlementsBrowser: return "Entitlements Browser"
+        case .permissions: return "Permissions"
         case .urlSchemes: return "URL Schemes"
         case .searchPlistPlaceholder: return "Search Info.plist keys or values"
         case .searchEntitlementsPlaceholder: return "Search entitlement keys or values"
@@ -229,20 +250,68 @@ enum AppText {
         case .bundleID: return "Bundle ID"
         case .bundlePath: return "Bundle Path"
         case .dataPath: return "Data Path"
+        case .documentsSize: return "Documents"
+        case .dataSize: return "Data"
         case .applicationType: return "Application Type"
         case .iconSource: return "Icon Source"
         case .copyBundleID: return "Copy Bundle ID"
         case .copyBundlePath: return "Copy Bundle Path"
         case .copyDataPath: return "Copy Data Path"
+        case .reason: return "Reason"
+        case .sourceKey: return "Source Key"
+        case .detectedBy: return "Detected By"
         case .exportAppIcon: return "Export App Icon"
         case .exportEntitlements: return "Export Entitlements"
         case .iconReady: return "Icon Ready"
         case .entitlementsReady: return "Entitlements Ready"
         case .noIconAvailable: return "No icon is available for this app."
         case .unavailable: return "Unavailable"
+        case .calculating: return "Calculating"
+        case .noPermissionsFound: return "No permissions detected"
+        case .permissionsEmptyHint: return "This app does not expose supported permission strings or push-related config."
+        case .noPermissionReason: return "No displayable usage description was found in Info.plist."
         case .backToApps: return "Apps"
         case .copied: return "Copied"
         case .scanFailed: return "Scan Failed"
+        }
+    }
+
+    static func permissionTitle(_ permission: AppPermissionKind, language: AppLanguage) -> String {
+        switch language {
+        case .chinese:
+            switch permission {
+            case .camera:
+                return "Camera"
+            case .microphone:
+                return "Microphone"
+            case .location:
+                return "Location"
+            case .photos:
+                return "Photos"
+            case .contacts:
+                return "Contacts"
+            case .notifications:
+                return "Notifications"
+            case .bluetooth:
+                return "Bluetooth"
+            }
+        case .english:
+            switch permission {
+            case .camera:
+                return "Camera"
+            case .microphone:
+                return "Microphone"
+            case .location:
+                return "Location"
+            case .photos:
+                return "Photos"
+            case .contacts:
+                return "Contacts"
+            case .notifications:
+                return "Notifications"
+            case .bluetooth:
+                return "Bluetooth"
+            }
         }
     }
 }

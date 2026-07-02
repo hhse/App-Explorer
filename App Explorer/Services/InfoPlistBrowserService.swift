@@ -9,6 +9,10 @@ import Foundation
 
 enum InfoPlistBrowserService {
     static func loadNodes(for app: InstalledApp) throws -> [InfoPlistNode] {
+        try makeNodes(from: loadDictionary(for: app))
+    }
+
+    static func loadDictionary(for app: InstalledApp) throws -> [String: Any] {
         guard let bundleURL = app.bundleURL else {
             throw InfoPlistBrowserError.missingBundleURL
         }
@@ -21,7 +25,7 @@ enum InfoPlistBrowserService {
             throw InfoPlistBrowserError.invalidInfoPlist
         }
 
-        return makeNodes(from: dictionary)
+        return dictionary
     }
 
     static func filter(nodes: [InfoPlistNode], query: String) -> [InfoPlistNode] {

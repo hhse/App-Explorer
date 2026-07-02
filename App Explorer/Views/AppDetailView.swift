@@ -15,6 +15,10 @@ struct AppDetailView: View {
     let app: InstalledApp
     let icon: UIImage?
 
+    @State private var storageUsage: AppStorageUsage?
+    @State private var isLoadingStorageUsage = false
+    @State private var storageUsageError = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -43,6 +47,17 @@ struct AppDetailView: View {
                         DetailInfoCard(title: text(.dataPath), value: dataURL.path)
                     }
 
+                    if app.dataURL != nil {
+                        DetailInfoCard(
+                            title: text(.documentsSize),
+                            value: storageValue(for: \.documentsSize)
+                        )
+                        DetailInfoCard(
+                            title: text(.dataSize),
+                            value: storageValue(for: \.dataSize)
+                        )
+                    }
+
                     if let minimumOSVersion = app.minimumOSVersion, !minimumOSVersion.isEmpty {
                         DetailInfoCard(title: text(.minimumIOS), value: minimumOSVersion)
                     }
@@ -61,6 +76,10 @@ struct AppDetailView: View {
                 }
 
                 ActionSection(title: text(.developerTools)) {
+                    NavigationToolButton(title: text(.permissions), systemImage: "hand.raised.fill") {
+                        PermissionsView(app: app)
+                    }
+
                     NavigationToolButton(title: text(.infoPlistBrowser), systemImage: "doc.text.magnifyingglass") {
                         InfoPlistBrowserView(app: app)
                     }
@@ -93,6 +112,9 @@ struct AppDetailView: View {
         .background(AppSurfaceBackground())
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
+        .task(id: app.bundleID) {
+            await loadStorageUsage()
+        }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
@@ -121,6 +143,58 @@ struct AppDetailView: View {
     private func text(_ key: LocalizedTextKey) -> String {
         AppText.text(key, language: settings.language)
     }
+
+    private func storageValue(for keyPath: KeyPath<AppStorageUsage, Int64>) -> String {
+        if let storageUsage {
+            return Self.byteCountFormatter.string(fromByteCount: storageUsage[keyPath: keyPath])
+        }
+
+        if isLoadingStorageUsage {
+            return text(.calculating)
+        }
+
+        if storageUsageError {
+            return text(.unavailable)
+        }
+
+        return text(.unavailable)
+    }
+
+    private func loadStorageUsage() async {
+        guard app.dataURL != nil else {
+            storageUsage = nil
+            isLoadingStorageUsage = false
+            storageUsageError = false
+            return
+        }
+
+        isLoadingStorageUsage = true
+        storageUsageError = false
+
+        do {
+            let app = app
+            let usage = try await Task.detached(priority: .utility) {
+                try AppStorageUsageService().usage(for: app)
+            }.value
+
+            storageUsage = usage
+        } catch {
+            storageUsage = nil
+            storageUsageError = true
+        }
+
+        isLoadingStorageUsage = false
+    }
+
+    private static let byteCountFormatter: ByteCountFormatter = {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useKB, .useMB, .useGB]
+        formatter.countStyle = .file
+        formatter.includesUnit = true
+        formatter.isAdaptive = true
+        formatter.zeroPadsFractionDigits = false
+        return formatter
+    }()
 }
 
 private struct InteractivePopGestureEnabler: UIViewControllerRepresentable {
